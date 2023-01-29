@@ -2,9 +2,8 @@
 
 namespace Gsdk\Navigation;
 
-use stdClass;
-
-class Menu {
+class Menu
+{
 
 	protected static array $itemAttributes = ['id', 'title', 'target'];
 
@@ -14,54 +13,65 @@ class Menu {
 
 	protected $view;
 
-	public function __construct() {
+	public function __construct()
+	{
 		$this->boot();
 	}
 
-	public function view($view): static {
+	public function view($view): static
+	{
 		$this->view = $view;
 		return $this;
 	}
 
-	public function current($current = null): static {
+	public function current($current = null): static
+	{
 		$this->current = $current ?? request()->route()->getName();
 
 		return $this;
 	}
 
-	public function add($params): static {
+	public function add($params): static
+	{
 		$this->items[] = $this->itemFactory($params);
 		return $this;
 	}
 
-	public function addUrl($url, $params): static {
+	public function addUrl($url, $params): static
+	{
 		if (is_string($params))
 			$params = ['text' => $params];
 
 		return $this->add(array_merge($params, ['url' => $url]));
 	}
 
-	public function addRoute($route, $params): static {
+	public function addRoute($route, $params): static
+	{
 		if (is_string($params))
 			$params = ['text' => $params];
 
-		return $this->add(array_merge($params, [
-			'id' => $route,
-			'url' => route($route)
-		]));
+		return $this->add(
+			array_merge($params, [
+				'id' => $route,
+				'url' => route($route)
+			])
+		);
 	}
 
-	public function hr(): static {
+	public function hr(): static
+	{
 		$this->items[] = '-';
 
 		return $this;
 	}
 
-	public function items(): array {
+	public function items(): array
+	{
 		return $this->items;
 	}
 
-	public function render(): string {
+	public function render(): string
+	{
 		if ($this->view)
 			return (string)view($this->view, ['menu' => $this]);
 
@@ -72,16 +82,18 @@ class Menu {
 		return $menu;
 	}
 
-	public function __toString(): string {
+	public function __toString(): string
+	{
 		return $this->render();
 	}
 
-	protected function boot() {
-
+	protected function boot()
+	{
 	}
 
-	protected function itemFactory($params): stdClass {
-		$item = new stdClass();
+	protected function itemFactory($params): \stdClass
+	{
+		$item = new \stdClass();
 		foreach (static::$itemAttributes as $k) {
 			$item->$k = $params[$k] ?? null;
 		}
@@ -94,7 +106,8 @@ class Menu {
 		return $item;
 	}
 
-	protected function renderItems(): string {
+	protected function renderItems(): string
+	{
 		$menu = '';
 		foreach ($this->items as $item) {
 			if ($item === '-')
@@ -106,11 +119,13 @@ class Menu {
 		return $menu;
 	}
 
-	protected function renderHr(): string {
+	protected function renderHr(): string
+	{
 		return '<hr>';
 	}
 
-	protected function renderItem($item): string {
+	protected function renderItem($item): string
+	{
 		$cls = [];
 		if ($item->class)
 			$cls[] = $item->class;

@@ -2,9 +2,10 @@
 
 namespace Gsdk\Navigation;
 
-use stdClass;
+use Illuminate\Support\Facades\Request;
 
-class Paginator {
+class Paginator
+{
 
 	protected $options = [
 		'step' => 10,
@@ -22,58 +23,69 @@ class Paginator {
 
 	protected $query;
 
-	public function __get($name) {
+	public function __get($name)
+	{
 		return match ($name) {
 			'offset' => $this->getStartIndex(),
 			default => ($this->options[$name] ?? null),
 		};
 	}
 
-	public function __set($name, $value) {
+	public function __set($name, $value)
+	{
 		$this->options[$name] = $value;
 	}
 
-	public function __construct($options = null) {
+	public function __construct($options = null)
+	{
 		if (is_int($options))
 			$this->setOptions(['step' => $options]);
 		else if ($options)
 			$this->setOptions($options);
 	}
 
-	public function setOptions($options): static {
+	public function setOptions($options): static
+	{
 		foreach ($options as $k => $v) {
 			$this->options[$k] = $v;
 		}
 		return $this;
 	}
 
-	public function getQuery($name, $default = null) {
+	public function getQuery($name, $default = null)
+	{
 		return ($_GET[$name] ?? $default);
 	}
 
-	public function setStep($step): static {
+	public function setStep($step): static
+	{
 		$this->options['step'] = $step;
 		return $this;
 	}
 
-	public function setCount($count): static {
+	public function setCount($count): static
+	{
 		$this->count = $count;
 		return $this;
 	}
 
-	public function getCount(): int {
+	public function getCount(): int
+	{
 		return $this->count;
 	}
 
-	public function getOffset(): int {
+	public function getOffset(): int
+	{
 		return ($this->getCurrentPage() - 1) * $this->step;
 	}
 
-	public function getStartIndex(): int {
+	public function getStartIndex(): int
+	{
 		return $this->getOffset();
 	}
 
-	public function getCurrentPage(): int {
+	public function getCurrentPage(): int
+	{
 		if (null !== $this->current)
 			return $this->current;
 
@@ -86,26 +98,21 @@ class Paginator {
 		return $this->current;
 	}
 
-	public function getPageCount(): int {
+	public function getPageCount(): int
+	{
 		return ceil($this->count / $this->step);
 	}
 
-	public function link($page, $text = null): string {
+	public function link($page, $text = null): string
+	{
 		if (null === $text)
 			$text = $page;
 
-		$query = $_SERVER['QUERY_STRING'];
-		if ($query)
-			$query = '?' . $query;
-
 		$url = $this->baseUrl;
-		if (null === $url) {
-			$url = $_SERVER['REQUEST_URI'];
-			if (false !== ($pos = strpos($url, '?')))
-				$url = substr($url, 0, $pos);
-			$this->baseUrl = $url;
-		}
-		$params = $_GET;
+		if (null === $url)
+			$this->baseUrl = '/' . Request::path();
+
+		$params = Request::query();
 		if ($page == 1)
 			unset($params[$this->queryParam]);
 		else
@@ -117,12 +124,13 @@ class Paginator {
 		return '<a href="' . $url . '">' . $text . '</a>';
 	}
 
-	private function getPages(): ?stdClass {
+	private function getPages(): ?\stdClass
+	{
 		$pageCount = $this->getPageCount();
 		if ($pageCount <= 1)
 			return null;
 
-		$pages = new stdClass();
+		$pages = new \stdClass();
 		$pages->count = $this->count;
 		$pages->step = $this->step;
 		$pages->first = 1;
@@ -157,7 +165,8 @@ class Paginator {
 		return $pages;
 	}
 
-	public function query($query): static {
+	public function query($query): static
+	{
 		$count = $query->count();
 		$this->setCount($count);
 		$query
@@ -166,7 +175,8 @@ class Paginator {
 		return $this;
 	}
 
-	public function render($view = null) {
+	public function render($view = null)
+	{
 		$pages = $this->getPages();
 		if (!$pages)
 			return '';
@@ -177,7 +187,8 @@ class Paginator {
 		]);
 	}
 
-	public function __toString(): string {
+	public function __toString(): string
+	{
 		return (string)$this->render();
 	}
 

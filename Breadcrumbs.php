@@ -2,9 +2,8 @@
 
 namespace Gsdk\Navigation;
 
-use stdClass;
-
-class Breadcrumbs {
+class Breadcrumbs
+{
 
 	protected array $items = [];
 
@@ -14,20 +13,24 @@ class Breadcrumbs {
 
 	protected $separator = '<div class="separator"></div>';
 
-	public function __construct() {
+	public function __construct()
+	{
 		$this->boot();
 	}
 
-	public function view($view): static {
+	public function view($view): static
+	{
 		$this->view = $view;
 		return $this;
 	}
 
-	public function isEmpty(): bool {
+	public function isEmpty(): bool
+	{
 		return empty($this->items);
 	}
 
-	public function add($params): static {
+	public function add($params): static
+	{
 		if (is_string($params))
 			$params = ['text' => $params];
 
@@ -35,24 +38,29 @@ class Breadcrumbs {
 		return $this;
 	}
 
-	public function addUrl($url, $params): static {
+	public function addUrl($url, $params): static
+	{
 		if (is_string($params))
 			$params = ['text' => $params];
 
 		return $this->add(array_merge($params, ['url' => $url]));
 	}
 
-	public function addRoute($route, $params): static {
+	public function addRoute($route, $params): static
+	{
 		if (is_string($params))
 			$params = ['text' => $params];
 
-		return $this->add(array_merge($params, [
-			'id' => $route,
-			'url' => route($route)
-		]));
+		return $this->add(
+			array_merge($params, [
+				'id' => $route,
+				'url' => route($route)
+			])
+		);
 	}
 
-	public function addHome(string $url, $params): static {
+	public function addHome(string $url, $params): static
+	{
 		if (is_string($params))
 			$params = ['text' => $params];
 
@@ -61,11 +69,13 @@ class Breadcrumbs {
 		return $this;
 	}
 
-	public function items(): array {
+	public function items(): array
+	{
 		return $this->items;
 	}
 
-	public function render(): string {
+	public function render(): string
+	{
 		if ($this->isEmpty())
 			return '';
 
@@ -77,16 +87,18 @@ class Breadcrumbs {
 			. '</nav></div>';
 	}
 
-	public function __toString(): string {
+	public function __toString(): string
+	{
 		return $this->render();
 	}
 
-	protected function boot() {
-
+	protected function boot()
+	{
 	}
 
-	protected function itemFactory($params): stdClass {
-		$item = new stdClass();
+	protected function itemFactory($params): \stdClass
+	{
+		$item = new \stdClass();
 		$item->id = $params['id'] ?? null;
 		$item->title = $params['title'] ?? null;
 		$item->target = $params['target'] ?? null;
@@ -97,7 +109,8 @@ class Breadcrumbs {
 		return $item;
 	}
 
-	protected function renderItems(): string {
+	protected function renderItems(): string
+	{
 		$menu = [];
 
 		if ($this->homeItem)
@@ -110,7 +123,8 @@ class Breadcrumbs {
 		return implode($this->separator, $menu);
 	}
 
-	protected function renderItem($item): string {
+	protected function renderItem($item): string
+	{
 		$tag = $item->href ? 'a' : 'div';
 		$html = '<' . $tag;
 		$attributes = ['id', 'title', 'target', 'href', 'class'];
