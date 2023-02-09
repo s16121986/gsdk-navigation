@@ -110,7 +110,7 @@ class Paginator
 
 		$url = $this->baseUrl;
 		if (null === $url)
-			$this->baseUrl = '/' . Request::path();
+			$url = $this->baseUrl = '/' . Request::path();
 
 		$params = Request::query();
 		if ($page == 1)
