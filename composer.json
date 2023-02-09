@@ -25,5 +25,5 @@
 	  "Gsdk\\Navigation\\": ""
 	}
   },
-  "minimum-stability": "dev"
+  "minimum-stability": "stable"
 }
